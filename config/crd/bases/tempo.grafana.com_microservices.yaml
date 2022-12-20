@@ -185,33 +185,15 @@ spec:
                 description: SearchOptions control the configuration for the search
                   capabilities.
                 properties:
-                  concurrentJobs:
+                  defaultResultLimit:
                     type: integer
-                  externalHedgeRequestsAt:
-                    type: integer
-                  externalHedgeRequestsUpTo:
+                  maxResultLimit:
                     type: integer
                   maxSearchTimeRange:
                     description: A Duration represents the elapsed time between two
                       instants as an int64 nanosecond count. The representation limits
                       the largest representable duration to approximately 290 years.
                     format: int64
-                    type: integer
-                  queryBackendAfter:
-                    description: A Duration represents the elapsed time between two
-                      instants as an int64 nanosecond count. The representation limits
-                      the largest representable duration to approximately 290 years.
-                    format: int64
-                    type: integer
-                  queryIngestersUntil:
-                    description: A Duration represents the elapsed time between two
-                      instants as an int64 nanosecond count. The representation limits
-                      the largest representable duration to approximately 290 years.
-                    format: int64
-                    type: integer
-                  queryTimeout:
-                    type: integer
-                  targetBytesPerJob:
                     type: integer
                 type: object
               storage:

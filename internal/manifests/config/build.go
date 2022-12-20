@@ -117,26 +117,14 @@ func renderTenantOverridesTemplate(opts tenantOptions) ([]byte, error) {
 
 func fromSearchSpecToOptions(spec v1alpha1.SearchSpec) searchOptions {
 	options := searchOptions{
-		ExternalHedgeRequestsUpTo: spec.ExternalHedgeRequestsUpTo,
-		ConcurrentJobs:            spec.ConcurrentJobs,
-		TargetBytesPerJob:         spec.TargetBytesPerJob,
+		// Those are recommended defaults taken from: https://grafana.com/docs/tempo/latest/operations/backend_search/
+		// some of them could depend on the volumen and retention of the data, need to figure out how to set it.
+		ExternalHedgeRequestsUpTo: 2,
+		ConcurrentJobs:            2000,
+		MaxConcurrentQueries:      20,
+		ExternalHedgeRequestsAt:   "8s",
 		// If not specified, will be zero,  means disable limit by default
 		MaxSearchTimeRange: spec.MaxSearchTimeRange.String(),
-	}
-	if spec.QueryTimeout != 0 {
-		options.QueryTimeout = spec.QueryTimeout.String()
-	}
-
-	if spec.ExternalHedgeRequestsAt != 0 {
-		options.QueryTimeout = spec.ExternalHedgeRequestsAt.String()
-	}
-
-	if spec.QueryIngestersUntil != 0 {
-		options.QueryIngestersUntil = spec.QueryIngestersUntil.String()
-	}
-
-	if spec.QueryBackendAfter != 0 {
-		options.QueryBackendAfter = spec.QueryBackendAfter.String()
 	}
 	return options
 }

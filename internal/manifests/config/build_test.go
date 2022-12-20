@@ -53,7 +53,11 @@ memberlist:
 metrics_generator_enabled: false
 multitenancy_enabled: false
 overrides:
-querier: 
+querier:
+  max_concurrent_queries: 20
+  search:
+    external_hedge_requests_at: 8s
+    external_hedge_requests_up_to: 2
   frontend_worker: 
     frontend_address: "tempo-test-query-frontend-discovery:9095"
 search_enabled: true
@@ -80,6 +84,10 @@ storage:
       path: /var/tempo/wal
 usage_report: 
   reporting_enabled: false
+query_frontend:
+  search:
+    concurrent_jobs: 2000
+    max_duration: 0s
 `
 	cfg, err := buildConfiguration(v1alpha1.Microservices{
 		ObjectMeta: metav1.ObjectMeta{
@@ -149,6 +157,10 @@ metrics_generator_enabled: false
 multitenancy_enabled: false
 overrides:
 querier: 
+  max_concurrent_queries: 20
+  search:
+    external_hedge_requests_at: 8s
+    external_hedge_requests_up_to: 2
   frontend_worker: 
     frontend_address: "tempo-test-query-frontend-discovery:9095"
 search_enabled: true
@@ -175,6 +187,10 @@ storage:
       path: /var/tempo/wal
 usage_report: 
   reporting_enabled: false
+query_frontend:
+  search:
+    concurrent_jobs: 2000
+    max_duration: 0s
       `,
 		},
 		{
@@ -226,6 +242,10 @@ multitenancy_enabled: false
 overrides:
   ingestion_rate_limit_bytes: 100
 querier: 
+  max_concurrent_queries: 20
+  search:
+    external_hedge_requests_at: 8s
+    external_hedge_requests_up_to: 2
   frontend_worker: 
     frontend_address: "tempo-test-query-frontend-discovery:9095"
 search_enabled: true
@@ -252,6 +272,10 @@ storage:
       path: /var/tempo/wal
 usage_report: 
   reporting_enabled: false
+query_frontend:
+  search:
+    concurrent_jobs: 2000
+    max_duration: 0s
       `,
 		},
 		{
@@ -302,6 +326,10 @@ multitenancy_enabled: false
 overrides:
   ingestion_burst_size_bytes: 100
 querier: 
+  max_concurrent_queries: 20
+  search:
+    external_hedge_requests_at: 8s
+    external_hedge_requests_up_to: 2
   frontend_worker: 
     frontend_address: "tempo-test-query-frontend-discovery:9095"
 search_enabled: true
@@ -328,6 +356,10 @@ storage:
       path: /var/tempo/wal
 usage_report: 
   reporting_enabled: false
+query_frontend:
+  search:
+    concurrent_jobs: 2000
+    max_duration: 0s
       `,
 		},
 		{
@@ -378,7 +410,11 @@ metrics_generator_enabled: false
 multitenancy_enabled: false
 overrides:
   max_bytes_per_trace: 100
-querier: 
+querier:
+  max_concurrent_queries: 20
+  search:
+    external_hedge_requests_at: 8s
+    external_hedge_requests_up_to: 2
   frontend_worker: 
     frontend_address: "tempo-test-query-frontend-discovery:9095"
 search_enabled: true
@@ -405,6 +441,10 @@ storage:
       path: /var/tempo/wal
 usage_report: 
   reporting_enabled: false
+query_frontend:
+  search:
+    concurrent_jobs: 2000
+    max_duration: 0s
       `,
 		},
 		{
@@ -455,7 +495,11 @@ metrics_generator_enabled: false
 multitenancy_enabled: false
 overrides:
   max_traces_per_user: 100
-querier: 
+querier:
+  max_concurrent_queries: 20
+  search:
+    external_hedge_requests_at: 8s
+    external_hedge_requests_up_to: 2
   frontend_worker: 
     frontend_address: "tempo-test-query-frontend-discovery:9095"
 search_enabled: true
@@ -482,6 +526,10 @@ storage:
       path: /var/tempo/wal
 usage_report: 
   reporting_enabled: false
+query_frontend:
+  search:
+    concurrent_jobs: 2000
+    max_duration: 0s
       `,
 		},
 		{
@@ -532,7 +580,11 @@ metrics_generator_enabled: false
 multitenancy_enabled: false
 overrides:
   max_bytes_per_tag_values_query: 100
-querier: 
+querier:
+  max_concurrent_queries: 20
+  search:
+    external_hedge_requests_at: 8s
+    external_hedge_requests_up_to: 2
   frontend_worker: 
     frontend_address: "tempo-test-query-frontend-discovery:9095"
 search_enabled: true
@@ -559,6 +611,10 @@ storage:
       path: /var/tempo/wal
 usage_report: 
   reporting_enabled: false
+query_frontend:
+  search:
+    concurrent_jobs: 2000
+    max_duration: 0s
       `,
 		},
 		{
@@ -609,7 +665,11 @@ metrics_generator_enabled: false
 multitenancy_enabled: false
 overrides:
   max_search_bytes_per_trace: 1000
-querier: 
+querier:
+  max_concurrent_queries: 20
+  search:
+    external_hedge_requests_at: 8s
+    external_hedge_requests_up_to: 2
   frontend_worker: 
     frontend_address: "tempo-test-query-frontend-discovery:9095"
 search_enabled: true
@@ -636,6 +696,10 @@ storage:
       path: /var/tempo/wal
 usage_report: 
   reporting_enabled: false
+query_frontend:
+  search:
+    concurrent_jobs: 2000
+    max_duration: 0s
       `,
 		},
 		{
@@ -699,6 +763,10 @@ overrides:
   max_bytes_per_tag_values_query: 500
   max_search_bytes_per_trace: 1000
 querier: 
+  max_concurrent_queries: 20
+  search:
+    external_hedge_requests_at: 8s
+    external_hedge_requests_up_to: 2
   frontend_worker: 
     frontend_address: "tempo-test-query-frontend-discovery:9095"
 search_enabled: true
@@ -725,6 +793,10 @@ storage:
       path: /var/tempo/wal
 usage_report: 
   reporting_enabled: false
+query_frontend:
+  search:
+    concurrent_jobs: 2000
+    max_duration: 0s
       `,
 		},
 		{
@@ -786,6 +858,10 @@ multitenancy_enabled: false
 overrides:
   per_tenant_override_config: /conf/overrides.yaml
 querier: 
+  max_concurrent_queries: 20
+  search:
+    external_hedge_requests_at: 8s
+    external_hedge_requests_up_to: 2
   frontend_worker: 
     frontend_address: "tempo-test-query-frontend-discovery:9095"
 search_enabled: true
@@ -812,6 +888,10 @@ storage:
       path: /var/tempo/wal
 usage_report: 
   reporting_enabled: false
+query_frontend:
+  search:
+    concurrent_jobs: 2000
+    max_duration: 0s
       `,
 		},
 	}

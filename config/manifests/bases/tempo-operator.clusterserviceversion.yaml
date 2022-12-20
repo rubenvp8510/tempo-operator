@@ -140,6 +140,15 @@ spec:
         path: retention.perTenant.traces
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
+      - description: SearchOptions control the configuration for the search capabilities.
+        displayName: Search configuration options
+        path: searchOptions
+      - displayName: Limit used for search requests if none is set by the caller
+        path: searchOptions.defaultResultLimit
+      - displayName: The maximum allowed value of the limit parameter on search requests
+        path: searchOptions.maxResultLimit
+      - displayName: Max search time range allowed
+        path: searchOptions.maxSearchTimeRange
       - description: 'NOTE: currently this field is not considered. Storage defines
           S3 compatible object storage configuration. User is required to create secret
           and supply it.'
