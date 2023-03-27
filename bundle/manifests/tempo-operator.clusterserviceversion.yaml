@@ -14,10 +14,10 @@ metadata:
         }
       ]
     capabilities: Basic Install
-    createdAt: "2023-03-16T16:42:23Z"
+    createdAt: "2023-03-27T00:45:34Z"
     operators.operatorframework.io/builder: operator-sdk-v1.27.0
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
-  name: tempo-operator.v0.0.1
+  name: tempo-operator.v1.0.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -599,7 +599,7 @@ spec:
                 - --config=controller_manager_config.yaml
                 command:
                 - /manager
-                image: ghcr.io/os-observability/tempo-operator/tempo-operator:v0.0.1
+                image: ghcr.io/rubenvp8510/tempo-operator/tempo-operator:v1.0.0
                 livenessProbe:
                   httpGet:
                     path: /healthz
@@ -728,7 +728,7 @@ spec:
   maturity: alpha
   provider:
     name: Red Hat
-  version: 0.0.1
+  version: 1.0.0
   webhookdefinitions:
   - admissionReviewVersions:
     - v1
