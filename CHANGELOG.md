@@ -3,6 +3,16 @@ Changes by Version
 
 <!-- next version -->
 
+## 1.1.1
+
+### 💡 Enhancements 💡
+
+- `operator`: Support monitor tab in Jaeger console (#470)
+- `operator`: Support Tempo 2.2.0 (#525)
+
+### Components
+- Tempo: [v2.2.1](https://github.com/grafana/tempo/releases/tag/v2.2.1)
+
 ## 0.4.0
 
 ### 💡 Enhancements 💡
