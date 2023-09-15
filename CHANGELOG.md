@@ -3,6 +3,25 @@ Changes by Version
 
 <!-- next version -->
 
+## 2.2.2
+
+### 💡 Enhancements 💡
+
+- `operator`: Add pprof flag to optionally expose pprof data (#242)
+- `operator`: Enable ingress (or route) in samples, add MinLength validation to .spec.storage.secret.name of the TempoStack CR (#541)
+- `operator`: Support monitor tab in Jaeger console (#470)
+- `operator`: Explicitly specify log level for all components. (#550)
+- `operator`: Support Tempo 2.2.0 (#525)
+
+### 🧰 Bug fixes 🧰
+
+- `operator`: Enable mTLS for all components except query-frontend. (#561)
+  Only enable mTLS for query-frontend when the gateway is enabled.
+- `operator`: Upgrade TempoStack instances once they are switched back from Unmanaged to Managed (#478)
+
+### Components
+- Tempo: [v2.2.1](https://github.com/grafana/tempo/releases/tag/v2.2.1)
+
 ## 0.4.0
 
 ### 💡 Enhancements 💡
