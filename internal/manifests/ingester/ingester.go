@@ -76,7 +76,11 @@ func statefulSet(params manifestutils.Params) (*v1.StatefulSet, error) {
 						{
 							Name:  "tempo",
 							Image: tempo.Spec.Images.Tempo,
-							Args:  []string{"-target=ingester", "-config.file=/conf/tempo.yaml"},
+							Args: []string{
+								"-target=ingester",
+								"-config.file=/conf/tempo.yaml",
+								"-log.level=info",
+							},
 							VolumeMounts: []corev1.VolumeMount{
 								{
 									Name:      manifestutils.ConfigVolumeName,
@@ -105,7 +109,7 @@ func statefulSet(params manifestutils.Params) (*v1.StatefulSet, error) {
 									Protocol:      corev1.ProtocolTCP,
 								},
 							},
-							ReadinessProbe:  manifestutils.TempoReadinessProbe(params.Gates.HTTPEncryption || params.Gates.GRPCEncryption),
+							ReadinessProbe:  manifestutils.TempoReadinessProbe(params.Gates.HTTPEncryption),
 							Resources:       manifestutils.Resources(tempo, manifestutils.IngesterComponentName),
 							SecurityContext: manifestutils.TempoContainerSecurityContext(),
 						},

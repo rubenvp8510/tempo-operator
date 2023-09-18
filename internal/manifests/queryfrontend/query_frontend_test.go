@@ -147,8 +147,9 @@ func getExpectedDeployment(withJaeger bool) *v1.Deployment {
 							Image: "docker.io/grafana/tempo:1.5.0",
 							Args: []string{
 								"-target=query-frontend",
-								"-config.file=/conf/tempo.yaml",
+								"-config.file=/conf/tempo-query-frontend.yaml",
 								"-mem-ballast-size-mbs=1024",
+								"-log.level=info",
 							},
 							Ports: []corev1.ContainerPort{
 								{

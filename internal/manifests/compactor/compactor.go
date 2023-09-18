@@ -72,7 +72,11 @@ func deployment(params manifestutils.Params) (*v1.Deployment, error) {
 						{
 							Name:  "tempo",
 							Image: tempo.Spec.Images.Tempo,
-							Args:  []string{"-target=compactor", "-config.file=/conf/tempo.yaml"},
+							Args: []string{
+								"-target=compactor",
+								"-config.file=/conf/tempo.yaml",
+								"-log.level=info",
+							},
 							Ports: []corev1.ContainerPort{
 								{
 									Name:          manifestutils.HttpPortName,
@@ -85,7 +89,7 @@ func deployment(params manifestutils.Params) (*v1.Deployment, error) {
 									Protocol:      corev1.ProtocolTCP,
 								},
 							},
-							ReadinessProbe: manifestutils.TempoReadinessProbe(params.Gates.HTTPEncryption || params.Gates.GRPCEncryption),
+							ReadinessProbe: manifestutils.TempoReadinessProbe(params.Gates.HTTPEncryption),
 							VolumeMounts: []corev1.VolumeMount{
 								{
 									Name:      manifestutils.ConfigVolumeName,
