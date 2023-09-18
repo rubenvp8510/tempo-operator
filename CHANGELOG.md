@@ -3,6 +3,11 @@ Changes by Version
 
 <!-- next version -->
 
+## 3.3.3
+
+### Components
+- Tempo: [v2.2.1](https://github.com/grafana/tempo/releases/tag/v2.2.1)
+
 ## 2.2.2
 
 ### 💡 Enhancements 💡
