@@ -67,10 +67,10 @@ jobs:
     with:
       org: redhat-openshift-ecosystem
       repo: community-operators-prod
+      version: ${{ env.VERSION }}
     secrets:
       PUBLISH_APP_ID: ${{ secrets.PUBLISH_APP_ID }}
       PUBLISH_APP_PRIVATE_KEY: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
-      VERSION: ${{ env.VERSION }}
 
   operator-hub-community-release:
     needs: release

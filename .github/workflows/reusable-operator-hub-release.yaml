@@ -9,6 +9,9 @@ on:
       repo:
         type: string
         required: true
+      version:
+        type: string
+        required: true
     secrets:
       PUBLISH_APP_ID:
         required: true
@@ -51,7 +54,7 @@ jobs:
 
       - name: Update version
         env:
-          VERSION: ${{ env.version }}
+          VERSION: ${{ inputs.version }}
         run: |
           mkdir operators/tempo-operator/${VERSION} 
           cp -R ./tmp/bundle/* operators/tempo-operator/${VERSION} 
@@ -64,7 +67,7 @@ jobs:
 
       - name: Create pull request against ${{ inputs.org }}/${{ inputs.repo }}
         env:
-          VERSION: ${{ env.VERSION }}
+          VERSION: ${{ inputs.version }}
           GH_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           message="Update the tempo to $VERSION"
