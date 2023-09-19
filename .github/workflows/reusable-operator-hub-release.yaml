@@ -25,11 +25,6 @@ jobs:
           app_id: ${{ secrets.PUBLISH_APP_ID }}
           private_key: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
 
-      - name: Set version as env variable
-        run: |
-          OPERATOR_VERSION=$(git describe --tags | sed 's/^v//')
-          echo version=${OPERATOR_VERSION} >> $GITHUB_ENV # update GitHub ENV vars
-
       - name: Sync fork
         env:
           GH_TOKEN: ${{ steps.generate_token.outputs.token }}
@@ -69,7 +64,7 @@ jobs:
 
       - name: Create pull request against ${{ inputs.org }}/${{ inputs.repo }}
         env:
-          VERSION: ${{ env.version }}
+          VERSION: ${{ env.VERSION }}
           GH_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           message="Update the tempo to $VERSION"

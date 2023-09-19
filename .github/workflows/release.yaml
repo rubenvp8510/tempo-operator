@@ -55,6 +55,10 @@ jobs:
             -F RELEASE_NOTES.md \
             "v${OPERATOR_VERSION}" \
             'dist/tempo-operator.yaml#Installation manifest for Kubernetes' \
+    - name: Set version as env variable
+      run: |
+        OPERATOR_VERSION=$(git describe --tags | sed 's/^v//')
+        echo VERSION=${OPERATOR_VERSION} >> $GITHUB_ENV # update GitHub ENV vars
 
 
   operator-hub-prod-release:
@@ -66,6 +70,7 @@ jobs:
     secrets:
       PUBLISH_APP_ID: ${{ secrets.PUBLISH_APP_ID }}
       PUBLISH_APP_PRIVATE_KEY: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
+      VERSION: ${{ env.OPERATOR_VERSION }}
 
   operator-hub-community-release:
     needs: release
