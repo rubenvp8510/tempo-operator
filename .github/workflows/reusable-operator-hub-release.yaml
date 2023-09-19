@@ -39,20 +39,20 @@ jobs:
           # synchronizing the fork is fast, and avoids the need to fetch the full upstream repo
           # (fetching the upstream repo with "--depth 1" would lead to "shallow update not allowed"
           #  error when pushing back to the origin repo)
-          gh repo sync grafana/${{ inputs.repo }} \
+          gh repo sync rubenvp8510/${{ inputs.repo }} \
               --source ${{ inputs.org }}/${{ inputs.repo }} \
               --force
 
       - name: Checkout operatorhub repo
         uses: actions/checkout@v3
         with:
-          repository: grafana/${{ inputs.repo }}
+          repository: rubenvp8510/${{ inputs.repo }}
           token: ${{ steps.generate_token.outputs.token }}
 
       - name: Checkout tempo-operator to tmp/ directory
         uses: actions/checkout@v3
         with:
-          repository: grafana/tempo-operator
+          repository: rubenvp8510/tempo-operator
           token: ${{ steps.generate_token.outputs.token }}
           path: tmp/
 
