@@ -56,13 +56,13 @@ jobs:
             "v${OPERATOR_VERSION}" \
             'dist/tempo-operator.yaml#Installation manifest for Kubernetes' \
 
-
   operator-hub-prod-release:
     needs: release
     uses: ./.github/workflows/reusable-operator-hub-release.yaml
     with:
       org: redhat-openshift-ecosystem
       repo: community-operators-prod
+      version: ${{inputs.version}}
     secrets:
       PUBLISH_APP_ID: ${{ secrets.PUBLISH_APP_ID }}
       PUBLISH_APP_PRIVATE_KEY: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
@@ -73,6 +73,7 @@ jobs:
     with:
       org: k8s-operatorhub
       repo: community-operators
+      version: ${{inputs.version}}
     secrets:
       PUBLISH_APP_ID: ${{ secrets.PUBLISH_APP_ID }}
       PUBLISH_APP_PRIVATE_KEY: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}

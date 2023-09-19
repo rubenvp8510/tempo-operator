@@ -9,6 +9,9 @@ on:
       repo:
         type: string
         required: true
+      version:
+        type: string
+        required: true
     secrets:
       PUBLISH_APP_ID:
         required: true
@@ -24,13 +27,6 @@ jobs:
         with:
           app_id: ${{ secrets.PUBLISH_APP_ID }}
           private_key: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
-      - name: Set version as env variable
-        env:
-          TAG: ${{ github.ref_name }}
-        run: |
-          echo $TAG
-          TAG=${TAG:1} # remove v (prefix)
-          echo version=${TAG} >> $GITHUB_ENV # update GitHub ENV vars
 
       - name: Sync fork
         env:
@@ -39,26 +35,26 @@ jobs:
           # synchronizing the fork is fast, and avoids the need to fetch the full upstream repo
           # (fetching the upstream repo with "--depth 1" would lead to "shallow update not allowed"
           #  error when pushing back to the origin repo)
-          gh repo sync grafana/${{ inputs.repo }} \
+          gh repo sync rubenvp8510/${{ inputs.repo }} \
               --source ${{ inputs.org }}/${{ inputs.repo }} \
               --force
 
       - name: Checkout operatorhub repo
         uses: actions/checkout@v3
         with:
-          repository: grafana/${{ inputs.repo }}
+          repository: rubenvp8510/${{ inputs.repo }}
           token: ${{ steps.generate_token.outputs.token }}
 
       - name: Checkout tempo-operator to tmp/ directory
         uses: actions/checkout@v3
         with:
-          repository: grafana/tempo-operator
+          repository: rubenvp8510/tempo-operator
           token: ${{ steps.generate_token.outputs.token }}
           path: tmp/
 
       - name: Update version
         env:
-          VERSION: ${{ env.version }}
+          VERSION: ${{ inputs.version }}
         run: |
           mkdir operators/tempo-operator/${VERSION} 
           cp -R ./tmp/bundle/* operators/tempo-operator/${VERSION} 
@@ -71,7 +67,7 @@ jobs:
 
       - name: Create pull request against ${{ inputs.org }}/${{ inputs.repo }}
         env:
-          VERSION: ${{ env.version }}
+          VERSION: ${{ inputs.version }}
           GH_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           message="Update the tempo to $VERSION"
