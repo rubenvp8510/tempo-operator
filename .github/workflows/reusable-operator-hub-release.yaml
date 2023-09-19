@@ -24,13 +24,11 @@ jobs:
         with:
           app_id: ${{ secrets.PUBLISH_APP_ID }}
           private_key: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
+
       - name: Set version as env variable
-        env:
-          TAG: ${{ github.ref_name }}
         run: |
-          echo $TAG
-          TAG=${TAG:1} # remove v (prefix)
-          echo version=${TAG} >> $GITHUB_ENV # update GitHub ENV vars
+          OPERATOR_VERSION=$(git describe --tags | sed 's/^v//')
+          echo version=${OPERATOR_VERSION} >> $GITHUB_ENV # update GitHub ENV vars
 
       - name: Sync fork
         env:
