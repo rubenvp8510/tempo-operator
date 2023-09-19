@@ -70,7 +70,7 @@ jobs:
     secrets:
       PUBLISH_APP_ID: ${{ secrets.PUBLISH_APP_ID }}
       PUBLISH_APP_PRIVATE_KEY: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
-      VERSION: ${{ env.OPERATOR_VERSION }}
+      VERSION: ${{ env.VERSION }}
 
   operator-hub-community-release:
     needs: release
