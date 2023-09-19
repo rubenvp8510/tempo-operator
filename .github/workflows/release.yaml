@@ -73,6 +73,7 @@ jobs:
     with:
       org: k8s-operatorhub
       repo: community-operators
+      version: ${{inputs.version}}
     secrets:
       PUBLISH_APP_ID: ${{ secrets.PUBLISH_APP_ID }}
       PUBLISH_APP_PRIVATE_KEY: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
