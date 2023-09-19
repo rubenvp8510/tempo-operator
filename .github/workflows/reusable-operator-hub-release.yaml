@@ -27,6 +27,8 @@ jobs:
         with:
           app_id: ${{ secrets.PUBLISH_APP_ID }}
           private_key: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
+          permissions: >-
+            {"pull_requests": "write"}
 
       - name: Sync fork
         env:
