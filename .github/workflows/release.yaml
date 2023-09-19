@@ -63,6 +63,9 @@ jobs:
     with:
       org: redhat-openshift-ecosystem
       repo: community-operators-prod
+    secrets:
+      PUBLISH_APP_ID: ${{ secrets.PUBLISH_APP_ID }}
+      PUBLISH_APP_PRIVATE_KEY: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
 
   operator-hub-community-release:
     needs: release
@@ -70,3 +73,6 @@ jobs:
     with:
       org: k8s-operatorhub
       repo: community-operators
+    secrets:
+      PUBLISH_APP_ID: ${{ secrets.PUBLISH_APP_ID }}
+      PUBLISH_APP_PRIVATE_KEY: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}

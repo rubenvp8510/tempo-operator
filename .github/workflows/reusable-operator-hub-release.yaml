@@ -9,7 +9,11 @@ on:
       repo:
         type: string
         required: true
-
+    secrets:
+      PUBLISH_APP_ID:
+        required: true
+      PUBLISH_APP_PRIVATE_KEY:
+        required: true
 jobs:
   create-operator-pull-request:
     runs-on: ubuntu-latest
