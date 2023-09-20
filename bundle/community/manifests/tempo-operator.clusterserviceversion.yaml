@@ -42,14 +42,14 @@ metadata:
     capabilities: Deep Insights
     categories: Logging & Tracing,Monitoring
     containerImage: ghcr.io/grafana/tempo-operator/tempo-operator
-    createdAt: "2023-09-19T14:39:40Z"
+    createdAt: "2023-09-20T03:58:35Z"
     description: Create and manage deployments of Tempo, a high-scale distributed
       tracing backend.
     operators.operatorframework.io/builder: operator-sdk-v1.27.0
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
     repository: https://github.com/grafana/tempo-operator
     support: Grafana Tempo Operator SIG
-  name: tempo-operator.v12.1.1
+  name: tempo-operator.v15.0.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -748,7 +748,7 @@ spec:
                 - --zap-log-level=info
                 - start
                 - --config=controller_manager_config.yaml
-                image: ghcr.io/grafana/tempo-operator/tempo-operator:v12.1.1
+                image: ghcr.io/grafana/tempo-operator/tempo-operator:v15.0.0
                 livenessProbe:
                   httpGet:
                     path: /healthz
@@ -884,7 +884,7 @@ spec:
   maturity: alpha
   provider:
     name: Grafana Tempo Operator SIG
-  version: 12.1.1
+  version: 15.0.0
   webhookdefinitions:
   - admissionReviewVersions:
     - v1
