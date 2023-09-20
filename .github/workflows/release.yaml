@@ -60,7 +60,7 @@ jobs:
     needs: release
     uses: ./.github/workflows/reusable-operator-hub-release.yaml
     with:
-      org: redhat-openshift-ecosystem
+      org: rubenvp8510
       repo: community-operators-prod
       version: ${{inputs.version}}
     secrets:
@@ -72,7 +72,7 @@ jobs:
     needs: release
     uses: ./.github/workflows/reusable-operator-hub-release.yaml
     with:
-      org: k8s-operatorhub
+      org: rubenvp8510
       repo: community-operators
       version: ${{inputs.version}}
     secrets:
