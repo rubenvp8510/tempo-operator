@@ -9,4 +9,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: ghcr.io/grafana/tempo-operator/tempo-operator
-  newTag: v15.0.0
+  newTag: v15.1.0
