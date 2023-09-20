@@ -60,20 +60,22 @@ jobs:
     needs: release
     uses: ./.github/workflows/reusable-operator-hub-release.yaml
     with:
-      org: heisenberg8510
+      org: redhat-openshift-ecosystem
       repo: community-operators-prod
       version: ${{inputs.version}}
     secrets:
       PUBLISH_APP_ID: ${{ secrets.PUBLISH_APP_ID }}
       PUBLISH_APP_PRIVATE_KEY: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
+      PUBLISH_APP_INSTALLATION_ID: ${{ secrets.PUBLISH_APP_INSTALLATION_ID }}
 
   operator-hub-community-release:
     needs: release
     uses: ./.github/workflows/reusable-operator-hub-release.yaml
     with:
-      org: heisenberg8510
+      org: k8s-operatorhub
       repo: community-operators
       version: ${{inputs.version}}
     secrets:
       PUBLISH_APP_ID: ${{ secrets.PUBLISH_APP_ID }}
       PUBLISH_APP_PRIVATE_KEY: ${{ secrets.PUBLISH_APP_PRIVATE_KEY }}
+      PUBLISH_APP_INSTALLATION_ID: ${{ secrets.PUBLISH_APP_INSTALLATION_ID }}

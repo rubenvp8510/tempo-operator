@@ -17,6 +17,8 @@ on:
         required: true
       PUBLISH_APP_PRIVATE_KEY:
         required: true
+      PUBLISH_APP_INSTALLATION_ID:
+        required: true
 jobs:
   create-operator-pull-request:
     runs-on: ubuntu-latest
