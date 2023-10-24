@@ -7,7 +7,7 @@ on:
         required: true
 
 jobs:
-  release:
+  prepare-release:
     runs-on: ubuntu-22.04
     steps:
       - name: Set up Go
@@ -48,7 +48,7 @@ jobs:
           git add -A
           git commit -m "Prepare Release ${{inputs.version}}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
           git push -f --set-upstream origin release/v${OPERATOR_VERSION}
-          gh pr create --title='Prepare release v${OPERATOR_VERSION}' --assignee=${{ github.actor }} --reviewer=${{ github.actor }} --body='v${OPERATOR_VERSION}'
+          gh pr create --title='Prepare release v${{ OPERATOR_VERSION }}' --assignee=${{ github.actor }} --reviewer=${{ github.actor }} --body='v${{ OPERATOR_VERSION }}'
         env:
           OPERATOR_VERSION: ${{inputs.version}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
