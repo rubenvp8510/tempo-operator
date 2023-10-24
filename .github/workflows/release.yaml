@@ -1,4 +1,4 @@
-name: "Prepare the release"
+name: "Release"
 on:
   push:
     tags: [ 'v*' ]
