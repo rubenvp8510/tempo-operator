@@ -2,9 +2,22 @@ name: "Release"
 on: [push]
 jobs:
   release:
-    if: github.event.pusher.name == "githubaction' && startsWith(github.ref, 'refs/heads/release/')
+#    if: github.event.pusher.name == "github-actions' && startsWith(github.event.pull_request.base.ref, 'refs/heads/release/')
     runs-on: ubuntu-22.04
     steps:
+    - name: Determine event
+      id: branch
+      run: echo "Branch=${{ github.event_name }}"
+
+    - name: Determine Branch
+      id: branch
+      run: echo "Branch=${{ github.event.pull_request.base.ref }}"
+
+    - name: Determine user
+      id: branch
+      run: echo "User=${{ github.event.pusher.name }}"
+
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
