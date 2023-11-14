@@ -3,6 +3,21 @@ Changes by Version
 
 <!-- next version -->
 
+## 102.0.0
+
+### 🛑 Breaking changes 🛑
+
+- `operator`: Move default images from operator configuration to environment variable (#591)
+
+### 💡 Enhancements 💡
+
+- `operator`: Support configuration of TLS in receiver settings (#527)
+- `operator`: Exposing the Tempo API through the gateway (#672)
+- `operator`: Reduce log level of certrotation messages (#623)
+
+### Components
+- Tempo: [v2.2.3](https://github.com/grafana/tempo/releases/tag/v2.2.3)
+
 ## 0.5.0
 
 ### 🛑 Breaking changes 🛑
