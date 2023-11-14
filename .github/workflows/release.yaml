@@ -1,12 +1,32 @@
 name: "Release"
 on:
-  push:
-    tags: [ 'v*' ]
-
+  pull_request:
+    types:
+      - closed
 jobs:
   release:
+    if: |
+        github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository
+
+    #    if: github.event.pusher.name == "github-actions' && startsWith(github.event.pull_request.base.ref, 'refs/heads/release/')
     runs-on: ubuntu-22.04
     steps:
+    - name: Determine Branch
+      id: branch
+      run: echo "branch=${{  github.event.pull_request.head.ref }}"
+
+    - name: Determine repo
+      id: repo
+      run: echo "repo=${{ github.event.pull_request.base.repo.full_name }}"
+
+    - name: Determine user
+      id: user
+      run: echo "User=${{ github.event.pull_request.user.login }}"
+
+    - name: Actor user
+      id: acctor
+      run: echo "User=${{ github.actor }}"
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
