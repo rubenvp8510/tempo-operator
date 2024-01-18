@@ -3,6 +3,21 @@ Changes by Version
 
 <!-- next version -->
 
+## 200.1.0
+
+### 💡 Enhancements 💡
+
+- `operator`: Create Grafana Tempo Operator datasource (#423)
+- `operator`: Add .spec.hashRing.memberlist.enableIPv6 option to enable IPv6 support (#704)
+- `operator`: Propagating proxy env vars to component containers (#700)
+
+### 🧰 Bug fixes 🧰
+
+- `operator`: Configure the number of replicas for compactor, querier and query-frontend according to the CR (#712)
+
+### Components
+- Tempo: [v2.3.0](https://github.com/grafana/tempo/releases/tag/v2.3.0)
+
 ## 0.6.0
 
 ### 🛑 Breaking changes 🛑
