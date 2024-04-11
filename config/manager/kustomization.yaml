@@ -9,4 +9,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: ghcr.io/rubenvp8510/tempo-operator/tempo-operator
-  newTag: v400.0.0
+  newTag: v400.2.0
