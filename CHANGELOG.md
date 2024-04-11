@@ -3,6 +3,24 @@ Changes by Version
 
 <!-- next version -->
 
+## 400.0.0
+
+### 🛑 Breaking changes 🛑
+
+- `operator`: TempoMonolithic: Split `tempo-<name>` service into `tempo-<name>` and `tempo-<name>-jaegerui` (#846)
+
+### 💡 Enhancements 💡
+
+- `operator`: Add storage and managed operands gauge metric to the operator metrics. (#838)
+- `operator`: Support Grafana instances in a different namespace (#840)
+- `operator`: Support custom ServiceAccount in TempoMonolithic CR (#836)
+- `operator`: Enable internal server for health checks in TempoMonolithic CR (#847)
+- `operator`: Support multi-tenancy in TempoMonolithic CR (#816)
+- `operator`: Add security context to tempo-query container (#864)
+
+### Components
+- Tempo: [v2.3.1](https://github.com/grafana/tempo/releases/tag/v2.3.1)
+
 ## 0.9.0
 
 ### 💡 Enhancements 💡
