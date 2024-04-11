@@ -2,7 +2,10 @@ name: Reusable - Publish Operator Images
 
 on:
   workflow_call:
-
+    inputs:
+      publish_bundle:
+        type: boolean
+        required: true
 jobs:
   publish:
     name: Publish container images
@@ -71,7 +74,7 @@ jobs:
         shell: bash
 
       - name: Publish operator bundle and catalog
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ inputs.publish_bundle }}
         run: make bundle bundle-build bundle-push catalog-build catalog-push
         env:
           IMG_PREFIX: ghcr.io/${{ github.repository }}
