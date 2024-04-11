@@ -38,7 +38,7 @@ jobs:
 
       - name: Determine operator version to release
         id: operator-version
-        run: echo "version=${BRANCH#"releases/"}" >> "$GITHUB_OUTPUT"
+        run: echo "version=${BRANCH#"v"}" >> "$GITHUB_OUTPUT"
         env:
           BRANCH: ${{ inputs.branch }}
 
