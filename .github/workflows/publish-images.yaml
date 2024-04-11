@@ -11,3 +11,5 @@ on:
 jobs:
   publish-images:
     uses: ./.github/workflows/reusable-publish-images.yaml
+    with:
+      publish_bundle: false

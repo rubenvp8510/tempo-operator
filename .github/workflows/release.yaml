@@ -51,6 +51,9 @@ jobs:
   publish-images:
     needs: release
     uses: ./.github/workflows/reusable-publish-images.yaml
+    with:
+      publish_bundle: true
+
   operator-hub-prod-release:
     needs: publish-images
     uses: ./.github/workflows/reusable-operator-hub-release.yaml
@@ -62,6 +65,7 @@ jobs:
       bundletype: openshift
     secrets:
       TEMPOOPERATORBOT_GITHUB_TOKEN: ${{ secrets.TEMPOOPERATORBOT_GITHUB_TOKEN }}
+
   operator-hub-community-release:
     needs: publish-images
     uses: ./.github/workflows/reusable-operator-hub-release.yaml
