@@ -14,3 +14,4 @@ jobs:
     with:
       publish_bundle: false
       version_tag: ${{ github.ref }}
+      push: ${{ github.event_name != 'pull_request' }}
