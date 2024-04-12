@@ -29,9 +29,9 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}/tempo-operator
           tags: |
-            type=semver,pattern={{version}},value=${{version_tag}}
-            type=semver,pattern={{major}}.{{minor}},value=${{version_tag}}
-            type=semver,pattern={{raw}},value=${{version_tag}}
+            type=semver,pattern={{version}},value=${{ inputs.version_tag }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ inputs.version_tag }}
+            type=semver,pattern={{raw}},value=${{ inputs.version_tag }}
             type=ref,event=branch
 
       - name: Set up QEMU
