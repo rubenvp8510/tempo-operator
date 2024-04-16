@@ -5,6 +5,8 @@ on:
       version:
         description: version of the operator to release
         required: true
+env:
+  OPERATOR_BOT_USER: rubenbot8510
 
 jobs:
   prepare-release:
@@ -18,14 +20,14 @@ jobs:
           # synchronizing the fork is fast, and avoids the need to fetch the full upstream repo
           # (fetching the upstream repo with "--depth 1" would lead to "shallow update not allowed"
           #  error when pushing back to the origin repo)
-          gh repo sync tempooperatorbot/${{ github.event.repository.name }} \
+          gh repo sync $OPERATOR_BOT_USER/${{ github.event.repository.name }} \
               --source ${{ github.repository }} \
               --force
 
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: tempooperatorbot/${{ github.event.repository.name }}
+          repository: $OPERATOR_BOT_USER/${{ github.event.repository.name }}
           token: ${{ secrets.TEMPOOPERATORBOT_GITHUB_TOKEN }}
 
 
@@ -53,12 +55,18 @@ jobs:
       # Commit all changed files back to the repository
       - name: Commit the changes to the repository and create PR
         run: |
-          git config user.name "tempooperatorbot"
-          git config user.email "41898282+tempooperatorbot@users.noreply.github.com"
+          git config user.name "$OPERATOR_BOT_USER"
+          git config user.email "41898282+$OPERATOR_BOT_USER@users.noreply.github.com"
           git checkout -b releases/${{ inputs.version }}
           git add -A
           git commit -m "Prepare Release ${{inputs.version}}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
           git push -f --set-upstream origin releases/${{ inputs.version }}
-          gh pr create --title='Prepare release v${{ inputs.version }}' --assignee=${{ github.actor }} --reviewer=${{ github.actor }} --body='v${{ inputs.version }}'
+          gh pr create \
+              --title='Prepare release v${{ inputs.version }}' \
+              --assignee=${{ github.actor }} \
+              --reviewer=${{ github.actor }} \
+              --body='v${{ inputs.version }}'\
+              --repo ${{ github.repository }}
+
         env:
           GITHUB_TOKEN: ${{ secrets.TEMPOOPERATORBOT_GITHUB_TOKEN }}

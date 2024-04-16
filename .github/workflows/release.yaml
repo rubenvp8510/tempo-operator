@@ -7,12 +7,15 @@ on:
       - closed
     paths:
       - CHANGELOG.md
+env:
+  OPERATOR_BOT_USER: rubenbot8510
+
 jobs:
   release:
     if: |
         github.event.pull_request.merged == true 
-        && github.event.pull_request.head.repo.full_name == 'tempooperatorbot/${{ github.repository }}'
-        && github.event.pull_request.user.login == 'tempooperatorbot' && github.event.pull_request.user.type == 'User'
+        && github.event.pull_request.head.repo.full_name == '$OPERATOR_BOT_USER/${{ github.repository }}'
+        && github.event.pull_request.user.login == $OPERATOR_BOT_USER && github.event.pull_request.user.type == 'User'
         && startsWith(github.event.pull_request.head.ref, 'releases/')
     runs-on: ubuntu-22.04
     outputs:
