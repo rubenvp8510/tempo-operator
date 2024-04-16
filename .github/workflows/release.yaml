@@ -1,10 +1,9 @@
 name: "Release"
 on:
-  pull_request:
+  push:
     branches:
-      - main
-    types:
-      - closed
+      - 'release/**'
+      - 'main'
     paths:
       - CHANGELOG.md
 env:
@@ -14,11 +13,6 @@ permissions: write-all
 
 jobs:
   release:
-    if: |
-        github.event.pull_request.merged == true 
-        && github.event.pull_request.head.repo.full_name == '$OPERATOR_BOT_USER/${{ github.repository }}'
-        && github.event.pull_request.user.login == $OPERATOR_BOT_USER && github.event.pull_request.user.type == 'User'
-        && startsWith(github.event.pull_request.head.ref, 'releases/')
     runs-on: ubuntu-22.04
     outputs:
       operator_version: ${{ steps.operator-version.outputs.version }}
