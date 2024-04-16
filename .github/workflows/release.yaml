@@ -18,8 +18,6 @@ jobs:
     - name: Determine operator version to release
       id: operator-version
       run: echo "version=$(grep -Eo '## [0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | head -n 1 | awk '{print $2})" >> "$GITHUB_OUTPUT"
-      env:
-        BRANCH: ${{ github.ref }}
 
     - name: Checkout
       uses: actions/checkout@v4
