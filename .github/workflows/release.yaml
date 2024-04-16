@@ -21,7 +21,7 @@ jobs:
       id: operator-version
       run: echo "version=${BRANCH#"releases/"}" >> "$GITHUB_OUTPUT"
       env:
-        BRANCH: ${{ github.event.pull_request.head.ref }}
+        BRANCH: ${{ github.ref }}
 
     - name: Checkout
       uses: actions/checkout@v4
