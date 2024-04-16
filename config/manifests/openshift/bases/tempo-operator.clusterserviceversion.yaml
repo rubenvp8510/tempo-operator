@@ -5,7 +5,7 @@ metadata:
     alm-examples: '[]'
     capabilities: Deep Insights
     categories: Logging & Tracing,Monitoring
-    containerImage: ghcr.io/rubenvp8510/tempo-operator/tempo-operator:v1025.0.1
+    containerImage: ghcr.io/rubenvp8510/tempo-operator/tempo-operator:v1026.0.0
     description: Create and manage deployments of Tempo, a high-scale distributed
       tracing backend.
     operatorframework.io/cluster-monitoring: "true"
