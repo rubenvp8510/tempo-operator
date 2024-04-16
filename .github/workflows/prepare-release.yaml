@@ -63,8 +63,6 @@ jobs:
           git push -f --set-upstream origin releases/${{ inputs.version }}
           gh pr create \
               --title='Prepare release v${{ inputs.version }}' \
-              --assignee=${{ github.actor }} \
-              --reviewer=${{ github.actor }} \
               --body='v${{ inputs.version }}'\
               --repo ${{ github.repository }}
 
