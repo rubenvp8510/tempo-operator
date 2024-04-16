@@ -3,6 +3,11 @@ Changes by Version
 
 <!-- next version -->
 
+## 900.2.2
+
+### Components
+- Tempo: [v2.3.1](https://github.com/grafana/tempo/releases/tag/v2.3.1)
+
 ## 900.1.0
 
 ### 🛑 Breaking changes 🛑
