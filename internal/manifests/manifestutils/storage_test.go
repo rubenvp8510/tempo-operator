@@ -97,7 +97,7 @@ func TestGetS3Storage(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, ""))
+	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, "", &TokenCCOAuthConfig{}))
 	assert.Len(t, pod.Containers[0].Env, 2)
 	assert.NoError(t, findEnvVar("S3_SECRET_KEY", &pod.Containers[0].Env))
 	assert.NoError(t, findEnvVar("S3_ACCESS_KEY", &pod.Containers[0].Env))
@@ -128,7 +128,7 @@ func TestGetS3Storage_short_lived(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, ""))
+	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, "", &TokenCCOAuthConfig{}))
 	assert.Len(t, pod.Containers[0].Env, 0)
 	assert.Len(t, pod.Containers[0].Args, 0)
 }
@@ -157,7 +157,7 @@ func TestGetS3StorageWithCA(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, ""))
+	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, "", &TokenCCOAuthConfig{}))
 	assert.Equal(t, []corev1.Volume{
 		{
 			Name: "customca",
@@ -308,12 +308,17 @@ func TestConfigureStorageWithS3CCO(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, ""))
-	assert.Len(t, pod.Containers[0].Env, 2)
+	assert.NoError(t, ConfigureS3Storage(&pod, "ingester",
+		tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, "", &TokenCCOAuthConfig{
+			AWS: &TokenCCOAWSEnvironment{
+				RoleARN: "arn:aws:iam::12345:role/test",
+			},
+		}))
+	assert.Len(t, pod.Containers[0].Env, 4)
 	assert.NoError(t, findEnvVar("AWS_SHARED_CREDENTIALS_FILE", &pod.Containers[0].Env))
 	assert.NoError(t, findEnvVar("AWS_SDK_LOAD_CONFIG", &pod.Containers[0].Env))
-	assert.Len(t, pod.Containers[0].VolumeMounts, 1)
-	assert.Len(t, pod.Volumes, 1)
+	assert.Len(t, pod.Containers[0].VolumeMounts, 2)
+	assert.Len(t, pod.Volumes, 2)
 	assert.Equal(t, tokenAuthConfigVolumeName, pod.Containers[0].VolumeMounts[0].Name)
 	assert.Equal(t, tokenAuthConfigVolumeName, pod.Volumes[0].Name)
 	assert.NotContains(t, pod.Containers[0].Args, "--storage.trace.s3.secret_key=$(S3_SECRET_KEY)")
