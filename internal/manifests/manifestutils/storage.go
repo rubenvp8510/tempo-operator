@@ -11,8 +11,7 @@ import (
 	"github.com/grafana/tempo-operator/api/tempo/v1alpha1"
 )
 
-// ConfigureAzureStorage mounts the Azure Storage credentials in a pod.
-func ConfigureAzureStorage(pod *corev1.PodSpec, containerName string, storageSecretName string, tlsSpec *v1alpha1.TLSSpec) error {
+func configureAzureStaticTokenStorage(pod *corev1.PodSpec, containerName string, storageSecretName string) error {
 	containerIdx, err := findContainerIndex(pod, containerName)
 	if err != nil {
 		return err
@@ -47,6 +46,47 @@ func ConfigureAzureStorage(pod *corev1.PodSpec, containerName string, storageSec
 		"--storage.trace.azure.storage_account_key=$(AZURE_ACCOUNT_KEY)",
 	}...)
 	return nil
+}
+
+func configureAzureShortTokenStorage(pod *corev1.PodTemplateSpec, containerName string, storageSecretName string) error {
+	if pod.Labels == nil {
+		pod.Labels = map[string]string{}
+	}
+	pod.Labels["azure.workload.identity/use"] = "true"
+
+	containerIdx, err := findContainerIndex(&pod.Spec, containerName)
+	if err != nil {
+		return err
+	}
+
+	pod.Spec.Containers[containerIdx].Env = append(pod.Spec.Containers[containerIdx].Env, []corev1.EnvVar{
+		{
+			Name: "AZURE_ACCOUNT_NAME",
+			ValueFrom: &corev1.EnvVarSource{
+				SecretKeyRef: &corev1.SecretKeySelector{
+					Key: "account_name",
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: storageSecretName,
+					},
+				},
+			},
+		},
+	}...)
+	pod.Spec.Containers[containerIdx].Args = append(pod.Spec.Containers[containerIdx].Args, []string{
+		"--storage.trace.azure.storage_account_name=$(AZURE_ACCOUNT_NAME)",
+	}...)
+
+	return nil
+}
+
+// ConfigureAzureStorage mounts the Azure Storage credentials in a pod.
+func ConfigureAzureStorage(podTemplate *corev1.PodTemplateSpec, containerName string, storageSecretName string,
+	credentialMode v1alpha1.CredentialMode) error {
+	if credentialMode == v1alpha1.CredentialModeToken {
+		return configureAzureShortTokenStorage(podTemplate, containerName, storageSecretName)
+	}
+
+	return configureAzureStaticTokenStorage(&podTemplate.Spec, containerName, storageSecretName)
 }
 
 // ConfigureGCS mounts the Google Cloud Storage credentials in a pod.
@@ -181,16 +221,16 @@ func ConfigureS3Storage(pod *corev1.PodSpec, containerName string, storageSecret
 }
 
 // ConfigureStorage configures storage.
-func ConfigureStorage(storage StorageParams, tempo v1alpha1.TempoStack, pod *corev1.PodSpec, containerName string) error {
+func ConfigureStorage(storage StorageParams, tempo v1alpha1.TempoStack, pod *corev1.PodTemplateSpec, containerName string) error {
 	if tempo.Spec.Storage.Secret.Name != "" {
 		switch tempo.Spec.Storage.Secret.Type {
 		case v1alpha1.ObjectStorageSecretAzure:
-			return ConfigureAzureStorage(pod, containerName, tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS)
+			return ConfigureAzureStorage(pod, containerName, tempo.Spec.Storage.Secret.Name, storage.CredentialMode)
 		case v1alpha1.ObjectStorageSecretGCS:
-			return ConfigureGCS(pod, containerName, tempo.Spec.Storage.Secret.Name,
+			return ConfigureGCS(&pod.Spec, containerName, tempo.Spec.Storage.Secret.Name,
 				storage.GCS != nil && storage.CredentialMode != v1alpha1.CredentialModeStatic)
 		case v1alpha1.ObjectStorageSecretS3:
-			return ConfigureS3Storage(pod, containerName, tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS,
+			return ConfigureS3Storage(&pod.Spec, containerName, tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS,
 				storage.CredentialMode, tempo.Name, storage.CloudCredentials.Environment)
 		}
 	}

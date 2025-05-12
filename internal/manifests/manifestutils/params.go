@@ -37,6 +37,8 @@ type AzureStorage struct {
 	Container   string
 	AccountName string
 	AccountKey  string
+	ClientID    string
+	TenantID    string
 }
 
 // GCS for Google Cloud Storage.

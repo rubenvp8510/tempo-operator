@@ -39,7 +39,11 @@ func TestConfigureAzureStorage(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, ConfigureAzureStorage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS))
+	podTemplate := corev1.PodTemplateSpec{
+		Spec: pod,
+	}
+
+	assert.NoError(t, ConfigureAzureStorage(&podTemplate, "ingester", tempo.Spec.Storage.Secret.Name, v1alpha1.CredentialModeStatic))
 	assert.Len(t, pod.Containers[0].Env, 2)
 	assert.NoError(t, findEnvVar("AZURE_ACCOUNT_NAME", &pod.Containers[0].Env))
 	assert.NoError(t, findEnvVar("AZURE_ACCOUNT_KEY", &pod.Containers[0].Env))
@@ -185,7 +189,7 @@ func TestConfigureStorage(t *testing.T) {
 	tests := []struct {
 		name    string
 		tempo   v1alpha1.TempoStack
-		pod     corev1.PodSpec
+		pod     corev1.PodTemplateSpec
 		envName string
 	}{
 		{
@@ -200,13 +204,14 @@ func TestConfigureStorage(t *testing.T) {
 					},
 				},
 			},
-			pod: corev1.PodSpec{
-				Containers: []corev1.Container{
-					{
-						Name: "ingester",
+			pod: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							Name: "ingester",
+						},
 					},
-				},
-			},
+				}},
 			envName: "AZURE_ACCOUNT_NAME",
 		},
 		{
@@ -221,10 +226,12 @@ func TestConfigureStorage(t *testing.T) {
 					},
 				},
 			},
-			pod: corev1.PodSpec{
-				Containers: []corev1.Container{
-					{
-						Name: "ingester",
+			pod: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							Name: "ingester",
+						},
 					},
 				},
 			},
@@ -242,10 +249,12 @@ func TestConfigureStorage(t *testing.T) {
 					},
 				},
 			},
-			pod: corev1.PodSpec{
-				Containers: []corev1.Container{
-					{
-						Name: "ingester",
+			pod: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							Name: "ingester",
+						},
 					},
 				},
 			},
@@ -256,7 +265,7 @@ func TestConfigureStorage(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			assert.NoError(t, ConfigureStorage(StorageParams{}, test.tempo, &test.pod, "ingester"))
-			assert.NoError(t, findEnvVar(test.envName, &test.pod.Containers[0].Env))
+			assert.NoError(t, findEnvVar(test.envName, &test.pod.Spec.Containers[0].Env))
 		})
 	}
 

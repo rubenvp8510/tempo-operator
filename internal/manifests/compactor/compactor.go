@@ -150,7 +150,7 @@ func deployment(params manifestutils.Params) (*v1.Deployment, error) {
 		},
 	}
 
-	err := manifestutils.ConfigureStorage(params.StorageParams, tempo, &d.Spec.Template.Spec, "tempo")
+	err := manifestutils.ConfigureStorage(params.StorageParams, tempo, &d.Spec.Template, "tempo")
 	if err != nil {
 		return nil, err
 	}
