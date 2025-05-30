@@ -6,7 +6,7 @@ on:
         description: version of the operator to release
         required: true
 env:
-  OPERATOR_BOT_USER: tempooperatorbot
+  OPERATOR_BOT_USER: heisenberg8510
 
 permissions: {}
 
@@ -32,7 +32,7 @@ jobs:
         with:
           repository: ${{ env.OPERATOR_BOT_USER }}/${{ github.event.repository.name }}
           token: ${{ secrets.TEMPOOPERATORBOT_GITHUB_TOKEN }}
-          persist-credentials: false
+          persist-credentials: true
 
 
       - name: Set up Go
