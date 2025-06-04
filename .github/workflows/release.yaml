@@ -10,7 +10,8 @@ permissions: {}
 
 jobs:
   release:
-    permissions: 
+    permissions:
+      id-token: write
       contents: write
     runs-on: ubuntu-22.04
     outputs:
@@ -21,7 +22,7 @@ jobs:
       with:
         ref: main
         token: ${{ secrets.GITHUB_TOKEN }}
-        persist-credentials: true
+        persist-credentials: false
 
     - name: Determine operator version to release
       id: operator-version
