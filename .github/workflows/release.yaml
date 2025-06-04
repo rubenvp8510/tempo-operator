@@ -21,7 +21,7 @@ jobs:
       with:
         ref: main
         token: ${{ secrets.GITHUB_TOKEN }}
-        persist-credentials: false
+        persist-credentials: true
 
     - name: Determine operator version to release
       id: operator-version
@@ -39,7 +39,7 @@ jobs:
 
     - name: "create the release in GitHub"
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         OPERATOR_VERSION: ${{ steps.operator-version.outputs.version }}
       run: |
         awk '/^## / {v=$2} v == "'${OPERATOR_VERSION}'" && !/^## / {print}' CHANGELOG.md > RELEASE_NOTES.md
