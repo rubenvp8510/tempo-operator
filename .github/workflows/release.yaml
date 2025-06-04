@@ -39,7 +39,7 @@ jobs:
 
     - name: "create the release in GitHub"
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ github.token }}
         OPERATOR_VERSION: ${{ steps.operator-version.outputs.version }}
       run: |
         awk '/^## / {v=$2} v == "'${OPERATOR_VERSION}'" && !/^## / {print}' CHANGELOG.md > RELEASE_NOTES.md
