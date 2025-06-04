@@ -5,7 +5,7 @@ Changes by Version
 
 ## 0.21.0
 
-### 🛑 Breaking changes 🛑
+### 🛑 Breaking changes 🛑 
 
 - `tempostack, tempomonolithic`: Ensure the operator does not grant additional permissions when enabling OpenShift tenancy mode (resolves CVE-2025-2786) (#1145)
   Ensure the permissions the operator is granting to the Tempo Service Account
