@@ -6,8 +6,6 @@ on:
     paths:
       - CHANGELOG.md
 
-permissions: {}
-
 jobs:
   release:
     permissions:
