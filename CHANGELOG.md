@@ -16,7 +16,7 @@ Changes by Version
   
   This breaking change does not affect existing Tempo instances in the cluster.
   However, the required permissions are now mandatory when creating or modifying a TempoStack or TempoMonolithic CR.
-  
+   
 
 ### 💡 Enhancements 💡
 
