@@ -6,10 +6,11 @@ on:
     paths:
       - CHANGELOG.md
 
+permissions: {}
+
 jobs:
   release:
     permissions:
-      id-token: write
       contents: write
     runs-on: ubuntu-22.04
     outputs:
