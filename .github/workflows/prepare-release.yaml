@@ -6,7 +6,7 @@ on:
         description: version of the operator to release
         required: true
 env:
-  OPERATOR_BOT_USER: tempooperatorbot
+  OPERATOR_BOT_USER: heisenberg8510
 
 permissions: {}
 
