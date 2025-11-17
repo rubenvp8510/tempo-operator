@@ -15,6 +15,7 @@ import (
 	"github.com/grafana/tempo-operator/internal/manifests/manifestutils"
 	"github.com/grafana/tempo-operator/internal/manifests/memberlist"
 	"github.com/grafana/tempo-operator/internal/manifests/naming"
+	"github.com/grafana/tempo-operator/internal/manifests/sizes"
 )
 
 const openshiftServiceTLSAnnotation = "service.beta.openshift.io/serving-cert-secret-name"
@@ -73,13 +74,6 @@ func BuildDistributor(params manifestutils.Params) ([]client.Object, error) {
 	}
 
 	return objects, nil
-}
-
-func resources(tempo v1alpha1.TempoStack) corev1.ResourceRequirements {
-	if tempo.Spec.Template.Distributor.Resources == nil {
-		return manifestutils.Resources(tempo, manifestutils.DistributorComponentName, tempo.Spec.Template.Distributor.Replicas)
-	}
-	return *tempo.Spec.Template.Distributor.Resources
 }
 
 func configureReceiversTLS(dep *v1.Deployment, caSecretName, certSecretName string) error {
@@ -267,7 +261,8 @@ func deployment(params manifestutils.Params) *v1.Deployment {
 									MountPath: manifestutils.TmpTempoStoragePath,
 								},
 							},
-							Resources:       resources(tempo),
+							Resources: sizes.Resources(tempo, manifestutils.DistributorComponentName,
+								tempo.Spec.Template.Distributor.Resources, tempo.Spec.Template.Distributor.Replicas),
 							SecurityContext: manifestutils.TempoContainerSecurityContext(),
 						},
 					},

@@ -22,6 +22,7 @@ import (
 	"github.com/grafana/tempo-operator/internal/manifests/memberlist"
 	"github.com/grafana/tempo-operator/internal/manifests/naming"
 	"github.com/grafana/tempo-operator/internal/manifests/oauthproxy"
+	"github.com/grafana/tempo-operator/internal/manifests/sizes"
 )
 
 const (
@@ -94,7 +95,8 @@ func BuildQueryFrontend(params manifestutils.Params) ([]client.Object, error) {
 			jaegerUIAuthentication := tempo.Spec.Template.QueryFrontend.JaegerQuery.Authentication
 
 			if jaegerUIAuthentication != nil && jaegerUIAuthentication.Enabled {
-				defaultOauthProxyResources := manifestutils.Resources(tempo, manifestutils.QueryFrontendOauthProxyComponentName, tempo.Spec.Template.QueryFrontend.Replicas)
+				defaultOauthProxyResources := sizes.Resources(tempo, manifestutils.QueryFrontendOauthProxyComponentName,
+					nil, tempo.Spec.Template.QueryFrontend.Replicas)
 
 				oauthproxy.PatchDeploymentForOauthProxy(
 					tempo.ObjectMeta,
@@ -133,27 +135,6 @@ func getQueryFrontendService(tempo v1alpha1.TempoStack, services []*corev1.Servi
 		}
 	}
 	return nil
-}
-
-func resources(tempo v1alpha1.TempoStack) corev1.ResourceRequirements {
-	if tempo.Spec.Template.QueryFrontend.Resources == nil {
-		return manifestutils.Resources(tempo, manifestutils.QueryFrontendComponentName, tempo.Spec.Template.QueryFrontend.Replicas)
-	}
-	return *tempo.Spec.Template.QueryFrontend.Resources
-}
-
-func tempoQueryResources(tempo v1alpha1.TempoStack) corev1.ResourceRequirements {
-	if tempo.Spec.Template.QueryFrontend.JaegerQuery.TempoQuery.Resources == nil {
-		return manifestutils.Resources(tempo, manifestutils.QueryFrontendComponentName, tempo.Spec.Template.QueryFrontend.Replicas)
-	}
-	return *tempo.Spec.Template.QueryFrontend.JaegerQuery.Resources
-}
-
-func jaegerQueryResources(tempo v1alpha1.TempoStack) corev1.ResourceRequirements {
-	if tempo.Spec.Template.QueryFrontend.JaegerQuery.Resources == nil {
-		return manifestutils.Resources(tempo, manifestutils.JaegerFrontendComponentName, tempo.Spec.Template.QueryFrontend.Replicas)
-	}
-	return *tempo.Spec.Template.QueryFrontend.JaegerQuery.Resources
 }
 
 func deployment(params manifestutils.Params) (*appsv1.Deployment, error) {
@@ -235,7 +216,8 @@ func deployment(params manifestutils.Params) (*appsv1.Deployment, error) {
 									MountPath: manifestutils.TmpTempoStoragePath,
 								},
 							},
-							Resources:       resources(tempo),
+							Resources: sizes.Resources(tempo, manifestutils.QueryFrontendComponentName,
+								tempo.Spec.Template.QueryFrontend.Resources, tempo.Spec.Template.QueryFrontend.Replicas),
 							SecurityContext: manifestutils.TempoContainerSecurityContext(),
 						},
 					},
@@ -297,7 +279,8 @@ func deployment(params manifestutils.Params) (*appsv1.Deployment, error) {
 					MountPath: manifestutils.TmpStoragePath,
 				},
 			},
-			Resources:       jaegerQueryResources(tempo),
+			Resources: sizes.Resources(tempo, manifestutils.JaegerFrontendComponentName, tempo.Spec.Template.QueryFrontend.JaegerQuery.Resources,
+				tempo.Spec.Template.QueryFrontend.Replicas),
 			SecurityContext: manifestutils.TempoContainerSecurityContext(),
 		}
 
@@ -322,7 +305,9 @@ func deployment(params manifestutils.Params) (*appsv1.Deployment, error) {
 					ReadOnly:  true,
 				},
 			},
-			Resources:       tempoQueryResources(tempo),
+			Resources: sizes.Resources(tempo, manifestutils.QueryFrontendComponentName,
+				tempo.Spec.Template.QueryFrontend.JaegerQuery.TempoQuery.Resources, tempo.Spec.Template.QueryFrontend.Replicas,
+			),
 			SecurityContext: manifestutils.TempoContainerSecurityContext(),
 			ReadinessProbe: &corev1.Probe{
 				ProbeHandler: corev1.ProbeHandler{

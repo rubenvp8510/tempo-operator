@@ -28,6 +28,7 @@ func createTempoCR(t *testing.T, nsn types.NamespacedName, version string, manag
 			},
 		},
 		Spec: v1alpha1.TempoStackSpec{
+			Size:            "legacy",
 			ManagementState: managementState,
 			Images:          configv1alpha1.ImagesSpec{},
 			Storage: v1alpha1.ObjectStorageSpec{

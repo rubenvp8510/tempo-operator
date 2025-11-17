@@ -74,7 +74,7 @@ metadata:
     capabilities: Deep Insights
     categories: Logging & Tracing,Monitoring
     containerImage: ghcr.io/grafana/tempo-operator/tempo-operator:v0.18.0
-    createdAt: "2025-09-17T14:23:30Z"
+    createdAt: "2025-11-17T03:06:45Z"
     description: Create and manage deployments of Tempo, a high-scale distributed
       tracing backend.
     operatorframework.io/cluster-monitoring: "true"
@@ -866,6 +866,15 @@ spec:
           components.
         displayName: Service Account
         path: serviceAccount
+      - description: Size defines one of the support Tempo deployment scale out sizes.
+        displayName: TempoStack Size
+        path: size
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:legacy
+        - urn:alm:descriptor:com.tectonic.ui:select:1x.pico
+        - urn:alm:descriptor:com.tectonic.ui:select:1x.extra-small
+        - urn:alm:descriptor:com.tectonic.ui:select:1x.small
+        - urn:alm:descriptor:com.tectonic.ui:select:1x.medium
       - description: |-
           Storage defines the spec for the object storage endpoint to store traces.
           User is required to create secret and supply it.

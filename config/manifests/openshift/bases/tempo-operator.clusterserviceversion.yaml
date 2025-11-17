@@ -795,6 +795,15 @@ spec:
           components.
         displayName: Service Account
         path: serviceAccount
+      - description: Size defines one of the support Tempo deployment scale out sizes.
+        displayName: TempoStack Size
+        path: size
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:legacy
+        - urn:alm:descriptor:com.tectonic.ui:select:1x.pico
+        - urn:alm:descriptor:com.tectonic.ui:select:1x.extra-small
+        - urn:alm:descriptor:com.tectonic.ui:select:1x.small
+        - urn:alm:descriptor:com.tectonic.ui:select:1x.medium
       - description: |-
           Storage defines the spec for the object storage endpoint to store traces.
           User is required to create secret and supply it.

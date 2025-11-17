@@ -1,4 +1,4 @@
-package manifestutils
+package sizes
 
 import (
 	corev1 "k8s.io/api/core/v1"
@@ -45,8 +45,16 @@ var (
 	}
 )
 
-// Resources calculates the resource requirements of a specific component.
-func Resources(tempo v1alpha1.TempoStack, component string, replicas *int32) corev1.ResourceRequirements {
+// Resources returns the resource requirements for a component, using specified resources if provided, or computing them otherwise.
+func Resources(tempo v1alpha1.TempoStack, component string, specifiedResources *corev1.ResourceRequirements, replicas *int32) corev1.ResourceRequirements {
+	if specifiedResources == nil {
+		return computeResources(tempo, component, replicas)
+	}
+	return *specifiedResources
+}
+
+// computeResources calculates the resource requirements of a specific component.
+func computeResources(tempo v1alpha1.TempoStack, component string, replicas *int32) corev1.ResourceRequirements {
 
 	resourcesMap := resourcesMapNoGateway
 	if tempo.Spec.Template.Gateway.Enabled {

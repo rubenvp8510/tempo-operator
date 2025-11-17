@@ -71,6 +71,7 @@ func TestIsManaged(t *testing.T) {
 					Namespace: "default",
 				},
 				Spec: tempov1alpha1.TempoStackSpec{
+					Size:            "legacy",
 					ManagementState: tempov1alpha1.ManagementStateManaged,
 					Storage: tempov1alpha1.ObjectStorageSpec{
 						Secret: tempov1alpha1.ObjectStorageSecretSpec{
@@ -90,6 +91,7 @@ func TestIsManaged(t *testing.T) {
 					Namespace: "default",
 				},
 				Spec: tempov1alpha1.TempoStackSpec{
+					Size:            "legacy",
 					ManagementState: tempov1alpha1.ManagementStateUnmanaged,
 					Storage: tempov1alpha1.ObjectStorageSpec{
 						Secret: tempov1alpha1.ObjectStorageSecretSpec{

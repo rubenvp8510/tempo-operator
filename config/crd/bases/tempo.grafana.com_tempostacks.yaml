@@ -434,6 +434,17 @@ spec:
                 description: ServiceAccount defines the service account to use for
                   all tempo components.
                 type: string
+              size:
+                description: Size defines one of the support Tempo deployment scale
+                  out sizes.
+                enum:
+                - legacy
+                - 1x.demo
+                - 1x.pico
+                - 1x.extra-small
+                - 1x.small
+                - 1x.medium
+                type: string
               storage:
                 description: |-
                   Storage defines the spec for the object storage endpoint to store traces.
@@ -3161,6 +3172,7 @@ spec:
                 type: string
             required:
             - managementState
+            - size
             - storage
             type: object
           status:

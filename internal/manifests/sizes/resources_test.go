@@ -1,4 +1,4 @@
-package manifestutils
+package sizes
 
 import (
 	"testing"
@@ -217,7 +217,7 @@ func TestResources(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			resources := Resources(test.tempo, "distributor", test.replicas)
+			resources := Resources(test.tempo, "distributor", nil, test.replicas)
 			assert.Equal(t, test.resources, resources)
 		})
 	}

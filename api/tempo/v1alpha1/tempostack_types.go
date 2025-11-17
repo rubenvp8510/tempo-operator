@@ -34,6 +34,13 @@ type TempoStackSpec struct {
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,xDescriptors={"urn:alm:descriptor:com.tectonic.ui:select:Managed","urn:alm:descriptor:com.tectonic.ui:select:Unmanaged"},displayName="Management State"
 	ManagementState ManagementStateType `json:"managementState,omitempty"`
 
+	// Size defines one of the support Tempo deployment scale out sizes.
+	//
+	// +required
+	// +kubebuilder:validation:Required
+	// +operator-sdk:csv:customresourcedefinitions:type=spec,xDescriptors={"urn:alm:descriptor:com.tectonic.ui:select:legacy","urn:alm:descriptor:com.tectonic.ui:select:1x.pico","urn:alm:descriptor:com.tectonic.ui:select:1x.extra-small","urn:alm:descriptor:com.tectonic.ui:select:1x.small","urn:alm:descriptor:com.tectonic.ui:select:1x.medium"},displayName="TempoStack Size"
+	Size TempoStackSizeType `json:"size"`
+
 	// LimitSpec is used to limit ingestion and querying rates.
 	//
 	// +optional

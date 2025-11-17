@@ -23,6 +23,7 @@ import (
 	"github.com/grafana/tempo-operator/internal/manifests/manifestutils"
 	"github.com/grafana/tempo-operator/internal/manifests/memberlist"
 	"github.com/grafana/tempo-operator/internal/manifests/naming"
+	"github.com/grafana/tempo-operator/internal/manifests/sizes"
 )
 
 func TestOauthProxyContainer(t *testing.T) {
@@ -134,7 +135,7 @@ func TestOauthProxyContainer(t *testing.T) {
 					Name:      getTLSSecretNameForFrontendService(test.tempo.Name),
 				},
 				},
-				Resources: manifestutils.Resources(test.tempo, manifestutils.QueryFrontendComponentName, &replicas),
+				Resources: sizes.Resources(test.tempo, manifestutils.QueryFrontendComponentName, nil, &replicas),
 				Env:       proxy.ReadProxyVarsFromEnv(),
 				ReadinessProbe: &corev1.Probe{
 					ProbeHandler: corev1.ProbeHandler{

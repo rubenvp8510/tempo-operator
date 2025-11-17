@@ -13,6 +13,7 @@ import (
 	"github.com/grafana/tempo-operator/internal/manifests/manifestutils"
 	"github.com/grafana/tempo-operator/internal/manifests/memberlist"
 	"github.com/grafana/tempo-operator/internal/manifests/naming"
+	"github.com/grafana/tempo-operator/internal/manifests/sizes"
 )
 
 // BuildCompactor creates distributor objects.
@@ -44,13 +45,6 @@ func BuildCompactor(params manifestutils.Params) ([]client.Object, error) {
 	}
 
 	return []client.Object{d, service(tempo)}, nil
-}
-
-func resources(tempo v1alpha1.TempoStack) corev1.ResourceRequirements {
-	if tempo.Spec.Template.Compactor.Resources == nil {
-		return manifestutils.Resources(tempo, manifestutils.CompactorComponentName, tempo.Spec.Template.Compactor.Replicas)
-	}
-	return *tempo.Spec.Template.Compactor.Resources
 }
 
 func deployment(params manifestutils.Params) (*v1.Deployment, error) {
@@ -122,7 +116,9 @@ func deployment(params manifestutils.Params) (*v1.Deployment, error) {
 									MountPath: manifestutils.TmpTempoStoragePath,
 								},
 							},
-							Resources:       resources(tempo),
+							Resources: sizes.Resources(tempo, manifestutils.CompactorComponentName,
+								tempo.Spec.Template.Compactor.Resources, tempo.Spec.Template.Compactor.Replicas,
+							),
 							SecurityContext: manifestutils.TempoContainerSecurityContext(),
 						},
 					},

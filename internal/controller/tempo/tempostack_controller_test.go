@@ -67,6 +67,7 @@ func createTempoCR(t *testing.T, nsn types.NamespacedName, storageSecret *corev1
 			Namespace: nsn.Namespace,
 		},
 		Spec: v1alpha1.TempoStackSpec{
+			Size: "legacy",
 			Images: configv1alpha1.ImagesSpec{
 				Tempo: "docker.io/grafana/tempo:1.5.0",
 			},
@@ -438,6 +439,7 @@ func TestStorageCustomCA(t *testing.T) {
 			Namespace: nsn.Namespace,
 		},
 		Spec: v1alpha1.TempoStackSpec{
+			Size: "legacy",
 			Images: configv1alpha1.ImagesSpec{
 				Tempo: "docker.io/grafana/tempo:1.5.0",
 			},
@@ -618,6 +620,7 @@ func TestPruneIngress(t *testing.T) {
 			Namespace: nsn.Namespace,
 		},
 		Spec: v1alpha1.TempoStackSpec{
+			Size: "legacy",
 			Images: configv1alpha1.ImagesSpec{
 				Tempo:       "docker.io/grafana/tempo:1.5.0",
 				TempoQuery:  "docker.io/grafana/tempo-query:1.5.0",
@@ -700,6 +703,7 @@ func TestK8SGatewaySecret(t *testing.T) {
 			Namespace: nsn.Namespace,
 		},
 		Spec: v1alpha1.TempoStackSpec{
+			Size: "legacy",
 			Template: v1alpha1.TempoTemplateSpec{
 				Gateway: v1alpha1.TempoGatewaySpec{
 					Enabled: true,
@@ -840,6 +844,7 @@ func TestOpenShiftMode_finalizer(t *testing.T) {
 			Namespace: namespaceName,
 		},
 		Spec: v1alpha1.TempoStackSpec{
+			Size: "legacy",
 			Template: v1alpha1.TempoTemplateSpec{
 				Gateway: v1alpha1.TempoGatewaySpec{
 					Enabled: true,
@@ -950,6 +955,7 @@ func TestReconcileManifestsValidateModes(t *testing.T) {
 			Namespace: nsn.Namespace,
 		},
 		Spec: v1alpha1.TempoStackSpec{
+			Size: "legacy",
 			Template: v1alpha1.TempoTemplateSpec{
 				Gateway: v1alpha1.TempoGatewaySpec{
 					Enabled: true,

@@ -20,6 +20,7 @@ import (
 	"github.com/grafana/tempo-operator/api/tempo/v1alpha1"
 	"github.com/grafana/tempo-operator/internal/manifests/manifestutils"
 	"github.com/grafana/tempo-operator/internal/manifests/naming"
+	"github.com/grafana/tempo-operator/internal/manifests/sizes"
 )
 
 const (
@@ -147,13 +148,6 @@ func HttpScheme(tls bool) string {
 }
 
 const containerNameTempoGateway = "tempo-gateway"
-
-func resources(tempo v1alpha1.TempoStack) corev1.ResourceRequirements {
-	if tempo.Spec.Template.Gateway.Resources == nil {
-		return manifestutils.Resources(tempo, manifestutils.GatewayComponentName, nil)
-	}
-	return *tempo.Spec.Template.Gateway.Resources
-}
 
 // LivenessProbe returns the liveness probe spec for the gateway.
 func LivenessProbe(tls bool) *corev1.Probe {
@@ -296,7 +290,8 @@ func deployment(params manifestutils.Params, rbacCfgHash string, tenantsCfgHash 
 									SubPath:   manifestutils.GatewayTenantFileName,
 								},
 							},
-							Resources:       resources(tempo),
+							Resources: sizes.Resources(tempo, manifestutils.GatewayComponentName,
+								tempo.Spec.Template.Gateway.Resources, nil),
 							SecurityContext: manifestutils.TempoContainerSecurityContext(),
 						},
 					},

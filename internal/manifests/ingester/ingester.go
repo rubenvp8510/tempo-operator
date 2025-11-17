@@ -13,6 +13,7 @@ import (
 	"github.com/grafana/tempo-operator/internal/manifests/manifestutils"
 	"github.com/grafana/tempo-operator/internal/manifests/memberlist"
 	"github.com/grafana/tempo-operator/internal/manifests/naming"
+	"github.com/grafana/tempo-operator/internal/manifests/sizes"
 )
 
 const (
@@ -130,8 +131,9 @@ func statefulSet(params manifestutils.Params) (*v1.StatefulSet, error) {
 									Protocol:      corev1.ProtocolTCP,
 								},
 							},
-							ReadinessProbe:  manifestutils.TempoReadinessProbe(params.CtrlConfig.Gates.HTTPEncryption),
-							Resources:       resources(tempo),
+							ReadinessProbe: manifestutils.TempoReadinessProbe(params.CtrlConfig.Gates.HTTPEncryption),
+							Resources: sizes.Resources(tempo, manifestutils.IngesterComponentName,
+								tempo.Spec.Template.Ingester.Resources, tempo.Spec.Template.Ingester.Replicas),
 							SecurityContext: manifestutils.TempoContainerSecurityContext(),
 						},
 					},
@@ -182,13 +184,6 @@ func statefulSet(params manifestutils.Params) (*v1.StatefulSet, error) {
 
 	manifestutils.SetGoMemLimit("tempo", &ss.Spec.Template.Spec)
 	return ss, nil
-}
-
-func resources(tempo v1alpha1.TempoStack) corev1.ResourceRequirements {
-	if tempo.Spec.Template.Ingester.Resources == nil {
-		return manifestutils.Resources(tempo, manifestutils.IngesterComponentName, tempo.Spec.Template.Ingester.Replicas)
-	}
-	return *tempo.Spec.Template.Ingester.Resources
 }
 
 func service(tempo v1alpha1.TempoStack) *corev1.Service {
