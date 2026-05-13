@@ -164,12 +164,14 @@ const (
 	// StorageTLSCAFilename is the key name of the CA file in the ConfigMap for accessing object storage.
 	StorageTLSCAFilename = "ca.crt"
 
-	tokenAuthConfigVolumeName       = "token-auth-config"       //#nosec G101 -- False positive
-	tokenAuthConfigDirectory        = "/etc/storage/token-auth" //#nosec G101 -- False positive
-	awsDefaultAudience              = "sts.amazonaws.com"
-	saTokenVolumeName               = "bound-sa-token"
-	saTokenExpiration         int64 = 3600
-	saTokenVolumeMountPath          = "/var/run/secrets/storage/serviceaccount" //#nosec G101 -- False positive
+	tokenAuthConfigVolumeName = "token-auth-config"       //#nosec G101 -- False positive
+	tokenAuthConfigDirectory  = "/etc/storage/token-auth" //#nosec G101 -- False positive
+	// AWSDefaultAudience is the default audience used for the projected ServiceAccount token
+	// presented to AWS STS when assuming a role via web identity federation (IRSA / CCO).
+	AWSDefaultAudience           = "sts.amazonaws.com"
+	saTokenVolumeName            = "bound-sa-token"
+	saTokenExpiration      int64 = 3600
+	saTokenVolumeMountPath       = "/var/run/secrets/storage/serviceaccount" //#nosec G101 -- False positive
 	// ServiceAccountTokenFilePath path for token STS.
 	ServiceAccountTokenFilePath = saTokenVolumeMountPath + "/token"
 	// AzureDefaultAudience default azure audience.

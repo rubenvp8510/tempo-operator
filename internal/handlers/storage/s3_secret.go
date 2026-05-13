@@ -107,16 +107,23 @@ func getS3Params(storageSecret corev1.Secret, path *field.Path, mode v1alpha1.Cr
 		}, nil
 	}
 
+	audience := string(storageSecret.Data["audience"])
+	if audience == "" {
+		audience = manifestutils.AWSDefaultAudience
+	}
+
 	if mode == v1alpha1.CredentialModeToken {
 		return &manifestutils.S3{
-			Bucket:  string(storageSecret.Data["bucket"]),
-			RoleARN: string(storageSecret.Data["role_arn"]),
-			Region:  string(storageSecret.Data["region"]),
+			Bucket:   string(storageSecret.Data["bucket"]),
+			RoleARN:  string(storageSecret.Data["role_arn"]),
+			Region:   string(storageSecret.Data["region"]),
+			Audience: audience,
 		}, nil
 	}
 
 	return &manifestutils.S3{
-		Bucket: string(storageSecret.Data["bucket"]),
-		Region: string(storageSecret.Data["region"]),
+		Bucket:   string(storageSecret.Data["bucket"]),
+		Region:   string(storageSecret.Data["region"]),
+		Audience: audience,
 	}, nil
 }

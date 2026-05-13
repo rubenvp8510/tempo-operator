@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 
 	"github.com/grafana/tempo-operator/api/tempo/v1alpha1"
@@ -98,7 +99,7 @@ func TestGetS3Storage(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, "", &TokenCCOAuthConfig{}, ""))
+	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, "", &TokenCCOAuthConfig{}, nil))
 	assert.Len(t, pod.Containers[0].Env, 2)
 	assert.NoError(t, findEnvVar("S3_SECRET_KEY", &pod.Containers[0].Env))
 	assert.NoError(t, findEnvVar("S3_ACCESS_KEY", &pod.Containers[0].Env))
@@ -115,7 +116,7 @@ func TestGetS3Storage_short_lived(t *testing.T) {
 				Secret: v1alpha1.ObjectStorageSecretSpec{
 					CredentialMode: v1alpha1.CredentialModeToken,
 					Name:           "test",
-					Type:           v1alpha1.ObjectStorageSecretAzure,
+					Type:           v1alpha1.ObjectStorageSecretS3,
 				},
 			},
 		},
@@ -129,9 +130,72 @@ func TestGetS3Storage_short_lived(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, "", &TokenCCOAuthConfig{}, ""))
-	assert.Len(t, pod.Containers[0].Env, 0)
-	assert.Len(t, pod.Containers[0].Args, 0)
+	s3 := &S3{
+		Bucket:   "testbucket",
+		RoleARN:  "arn:aws:iam::12345:role/test",
+		Region:   "us-east-1",
+		Audience: AWSDefaultAudience,
+	}
+
+	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, "", &TokenCCOAuthConfig{}, s3))
+
+	assert.Len(t, pod.Containers[0].Env, 4)
+	assert.NoError(t, findEnvVar("AWS_SDK_LOAD_CONFIG", &pod.Containers[0].Env))
+	assert.NoError(t, findEnvVar("AWS_WEB_IDENTITY_TOKEN_FILE", &pod.Containers[0].Env))
+	assert.NoError(t, findEnvVar("AWS_ROLE_ARN", &pod.Containers[0].Env))
+	assert.NoError(t, findEnvVar("AWS_DEFAULT_REGION", &pod.Containers[0].Env))
+
+	// The Tempo binary picks the credentials up from the AWS env vars, so no
+	// long-lived --storage.trace.s3.* args are expected for the IRSA path.
+	assert.NotContains(t, pod.Containers[0].Args, "--storage.trace.s3.secret_key=$(S3_SECRET_KEY)")
+	assert.NotContains(t, pod.Containers[0].Args, "--storage.trace.s3.access_key=$(S3_ACCESS_KEY)")
+
+	// Exactly the projected ServiceAccount-token volume should be added (no CCO-managed
+	// credentials secret volume for the user-managed IRSA path).
+	assert.Len(t, pod.Volumes, 1)
+	assert.Equal(t, saTokenVolumeName, pod.Volumes[0].Name)
+	require.NotNil(t, pod.Volumes[0].Projected)
+	require.Len(t, pod.Volumes[0].Projected.Sources, 1)
+	require.NotNil(t, pod.Volumes[0].Projected.Sources[0].ServiceAccountToken)
+	assert.Equal(t, AWSDefaultAudience, pod.Volumes[0].Projected.Sources[0].ServiceAccountToken.Audience)
+
+	assert.Len(t, pod.Containers[0].VolumeMounts, 1)
+	assert.Equal(t, saTokenVolumeName, pod.Containers[0].VolumeMounts[0].Name)
+	assert.Equal(t, saTokenVolumeMountPath, pod.Containers[0].VolumeMounts[0].MountPath)
+
+	for _, env := range pod.Containers[0].Env {
+		switch env.Name {
+		case "AWS_ROLE_ARN":
+			assert.Equal(t, "arn:aws:iam::12345:role/test", env.Value)
+		case "AWS_DEFAULT_REGION":
+			assert.Equal(t, "us-east-1", env.Value)
+		case "AWS_WEB_IDENTITY_TOKEN_FILE":
+			assert.Equal(t, ServiceAccountTokenFilePath, env.Value)
+		case "AWS_SDK_LOAD_CONFIG":
+			assert.Equal(t, "true", env.Value)
+		}
+	}
+}
+
+func TestGetS3Storage_short_lived_custom_audience(t *testing.T) {
+	pod := corev1.PodSpec{
+		Containers: []corev1.Container{{Name: "ingester"}},
+	}
+
+	s3 := &S3{
+		Bucket:   "testbucket",
+		RoleARN:  "arn:aws:iam::12345:role/test",
+		Region:   "us-east-1",
+		Audience: "custom-oidc-audience",
+	}
+
+	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", "test", &v1alpha1.TLSSpec{}, v1alpha1.CredentialModeToken, "", &TokenCCOAuthConfig{}, s3))
+
+	require.Len(t, pod.Volumes, 1)
+	require.NotNil(t, pod.Volumes[0].Projected)
+	require.Len(t, pod.Volumes[0].Projected.Sources, 1)
+	require.NotNil(t, pod.Volumes[0].Projected.Sources[0].ServiceAccountToken)
+	assert.Equal(t, "custom-oidc-audience", pod.Volumes[0].Projected.Sources[0].ServiceAccountToken.Audience)
 }
 
 func TestGetS3StorageWithCA(t *testing.T) {
@@ -158,7 +222,7 @@ func TestGetS3StorageWithCA(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, "", &TokenCCOAuthConfig{}, ""))
+	assert.NoError(t, ConfigureS3Storage(&pod, "ingester", tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS, tempo.Spec.Storage.Secret.CredentialMode, "", &TokenCCOAuthConfig{}, nil))
 	assert.Equal(t, []corev1.Volume{
 		{
 			Name: "customca",
@@ -324,7 +388,7 @@ func TestConfigureStorageWithS3CCO(t *testing.T) {
 			AWS: &TokenCCOAWSEnvironment{
 				RoleARN: "arn:aws:iam::12345:role/test",
 			},
-		}, "us-east-1"))
+		}, &S3{Region: "us-east-1", Audience: AWSDefaultAudience}))
 	assert.Len(t, pod.Containers[0].Env, 5)
 	assert.NoError(t, findEnvVar("AWS_SHARED_CREDENTIALS_FILE", &pod.Containers[0].Env))
 	assert.NoError(t, findEnvVar("AWS_SDK_LOAD_CONFIG", &pod.Containers[0].Env))

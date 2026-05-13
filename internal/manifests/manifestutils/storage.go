@@ -165,7 +165,9 @@ func ConfigureGCS(pod *corev1.PodSpec, containerName string, storageSecretName s
 	return nil
 }
 
-func configureS3StorageWithCOOAuth(pod *corev1.PodSpec, containerIdx int, tempo string, config *TokenCCOAuthConfig, region string) {
+func configureS3StorageWithCOOAuth(pod *corev1.PodSpec, containerIdx int, tempo string, config *TokenCCOAuthConfig, params *S3) {
+
+	region, audience := s3RegionAndAudience(params)
 
 	pod.Containers[containerIdx].Env = append(pod.Containers[containerIdx].Env, []corev1.EnvVar{
 		{
@@ -192,7 +194,7 @@ func configureS3StorageWithCOOAuth(pod *corev1.PodSpec, containerIdx int, tempo 
 
 	// Define volume with credentials
 	pod.Volumes = append(pod.Volumes, tokenCCOAuthConfigVolume(tempo))
-	pod.Volumes = append(pod.Volumes, saTokenVolume(awsDefaultAudience))
+	pod.Volumes = append(pod.Volumes, saTokenVolume(audience))
 
 	// Mount volume
 	pod.Containers[containerIdx].VolumeMounts = append(pod.Containers[containerIdx].VolumeMounts, corev1.VolumeMount{
@@ -204,6 +206,56 @@ func configureS3StorageWithCOOAuth(pod *corev1.PodSpec, containerIdx int, tempo 
 		Name:      saTokenVolumeName,
 		MountPath: saTokenVolumeMountPath,
 	})
+}
+
+// configureS3StorageToken wires the env vars and projected ServiceAccount-token volume
+// required for AWS STS web-identity federation (IRSA), with the role ARN supplied
+// by the user via the object-storage Secret rather than minted by the Cloud Credential Operator.
+func configureS3StorageToken(pod *corev1.PodSpec, containerIdx int, params *S3) {
+	region, audience := s3RegionAndAudience(params)
+
+	var roleARN string
+	if params != nil {
+		roleARN = params.RoleARN
+	}
+
+	pod.Containers[containerIdx].Env = append(pod.Containers[containerIdx].Env, []corev1.EnvVar{
+		{
+			Name:  "AWS_SDK_LOAD_CONFIG",
+			Value: "true",
+		},
+		{
+			Name:  "AWS_WEB_IDENTITY_TOKEN_FILE",
+			Value: ServiceAccountTokenFilePath,
+		},
+		{
+			Name:  "AWS_ROLE_ARN",
+			Value: roleARN,
+		},
+		{
+			Name:  "AWS_DEFAULT_REGION",
+			Value: region,
+		},
+	}...)
+
+	pod.Volumes = append(pod.Volumes, saTokenVolume(audience))
+
+	pod.Containers[containerIdx].VolumeMounts = append(pod.Containers[containerIdx].VolumeMounts, corev1.VolumeMount{
+		Name:      saTokenVolumeName,
+		MountPath: saTokenVolumeMountPath,
+	})
+}
+
+func s3RegionAndAudience(params *S3) (string, string) {
+	audience := AWSDefaultAudience
+	var region string
+	if params != nil {
+		if params.Audience != "" {
+			audience = params.Audience
+		}
+		region = params.Region
+	}
+	return region, audience
 }
 
 func configureS3StorageStatic(pod *corev1.PodSpec, containerIdx int, storageSecretName string) {
@@ -239,20 +291,19 @@ func configureS3StorageStatic(pod *corev1.PodSpec, containerIdx int, storageSecr
 
 // ConfigureS3Storage mounts the Amazon S3 credentials and TLS certs in a pod.
 func ConfigureS3Storage(pod *corev1.PodSpec, containerName string, storageSecretName string,
-	tlsSpec *v1alpha1.TLSSpec, credentialMode v1alpha1.CredentialMode, tempoName string, config *TokenCCOAuthConfig, region string) error {
-
-	if credentialMode == v1alpha1.CredentialModeToken {
-		return nil
-	}
+	tlsSpec *v1alpha1.TLSSpec, credentialMode v1alpha1.CredentialMode, tempoName string, ccoConfig *TokenCCOAuthConfig, params *S3) error {
 
 	containerIdx, err := findContainerIndex(pod, containerName)
 	if err != nil {
 		return err
 	}
 
-	if credentialMode == v1alpha1.CredentialModeTokenCCO {
-		configureS3StorageWithCOOAuth(pod, containerIdx, tempoName, config, region)
-	} else {
+	switch credentialMode {
+	case v1alpha1.CredentialModeToken:
+		configureS3StorageToken(pod, containerIdx, params)
+	case v1alpha1.CredentialModeTokenCCO:
+		configureS3StorageWithCOOAuth(pod, containerIdx, tempoName, ccoConfig, params)
+	default:
 		configureS3StorageStatic(pod, containerIdx, storageSecretName)
 	}
 
@@ -275,12 +326,8 @@ func ConfigureStorage(storage StorageParams, tempo v1alpha1.TempoStack, pod *cor
 			return ConfigureGCS(pod, containerName, tempo.Spec.Storage.Secret.Name, storage.GCS.Audience,
 				storage.CredentialMode)
 		case v1alpha1.ObjectStorageSecretS3:
-			var region string
-			if storage.S3 != nil {
-				region = storage.S3.Region
-			}
 			return ConfigureS3Storage(pod, containerName, tempo.Spec.Storage.Secret.Name, &tempo.Spec.Storage.TLS,
-				storage.CredentialMode, tempo.Name, storage.CloudCredentials.Environment, region)
+				storage.CredentialMode, tempo.Name, storage.CloudCredentials.Environment, storage.S3)
 		}
 	}
 	return nil

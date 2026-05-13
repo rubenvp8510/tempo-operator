@@ -65,6 +65,7 @@ type S3 struct {
 	Bucket   string
 	RoleARN  string
 	Region   string
+	Audience string
 	Insecure bool
 }
 

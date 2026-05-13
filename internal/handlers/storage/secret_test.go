@@ -59,9 +59,31 @@ func TestGetS3Params_short_lived(t *testing.T) {
 
 	require.Len(t, errs, 0)
 	require.Equal(t, &manifestutils.S3{
-		Bucket:  "testbucket",
-		RoleARN: "abc",
-		Region:  "rrrr",
+		Bucket:   "testbucket",
+		RoleARN:  "abc",
+		Region:   "rrrr",
+		Audience: manifestutils.AWSDefaultAudience,
+	}, s3)
+}
+
+func TestGetS3Params_short_lived_custom_audience(t *testing.T) {
+	storageSecret := corev1.Secret{
+		Data: map[string][]byte{
+			"bucket":   []byte("testbucket"),
+			"role_arn": []byte("abc"),
+			"region":   []byte("rrrr"),
+			"audience": []byte("custom-oidc-audience"),
+		},
+	}
+
+	s3, errs := getS3Params(storageSecret, nil, v1alpha1.CredentialModeToken)
+
+	require.Len(t, errs, 0)
+	require.Equal(t, &manifestutils.S3{
+		Bucket:   "testbucket",
+		RoleARN:  "abc",
+		Region:   "rrrr",
+		Audience: "custom-oidc-audience",
 	}, s3)
 }
 
